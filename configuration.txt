@@ -1,0 +1,7 @@
+cherry_size = 1.0
+wasp_size = 1.0
+cherry_speed = 1.0
+wasp_speed = 1.0
+bug_speed = 1.0
+bug_rotate_speed = 1.0
+start_pause = 5.0
