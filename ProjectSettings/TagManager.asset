@@ -2,7 +2,7 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags:
   - FantasyBee
   - Cherry
@@ -23,7 +23,7 @@ TagManager:
   - 
   - ladybug
   - 
-  - 
+  - "\u0414\u043B\u044F \u0448\u0438\u0440\u043C\u044B Plane"
   - 
   - 
   - 
@@ -49,3 +49,5 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  m_RenderingLayers:
+  - Default

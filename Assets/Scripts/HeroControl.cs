@@ -12,7 +12,7 @@ public class HeroControl : MonoBehaviour
     TextMeshProUGUI textInfo;
     LoadSituations loadSituations = new LoadSituations();
     Configuration config = new Configuration();
-//    Plane tracePlane;
+    //    Plane tracePlane;
     public static int sceneCounter = 0;
     public static int attemptCounter = 1;
     GameObject wasp;
@@ -20,6 +20,9 @@ public class HeroControl : MonoBehaviour
     GameObject mainCamera;
     GameObject lbBody;
     GameObject lbHead;
+
+    GameObject rawImage;
+
     //    Vector3 cameraPosition;
     //    Quaternion cameraRotation;
     Vector3 bugSize;
@@ -31,12 +34,12 @@ public class HeroControl : MonoBehaviour
     void Start()
     {
         textInfo = GameObject.Find("TextInfo").GetComponent<TextMeshProUGUI>();
-//       tracePlane = GameObject.Find("TracePlane").GetComponent<Plane>();
+        //       tracePlane = GameObject.Find("TracePlane").GetComponent<Plane>();
 
         loadSituations.Load();
         config.Load();
 
- //       render = GetComponent<Renderer>();
+        //       render = GetComponent<Renderer>();
         bugCollider = GetComponent<BoxCollider>();
         wasp = GameObject.Find("FantasyBee");
         cherry = GameObject.Find("Cherry");
@@ -44,8 +47,12 @@ public class HeroControl : MonoBehaviour
         lbBody = GameObject.Find("lb_body");
         lbHead = GameObject.Find("lb_head");
         transform.position = Configuration.bugInitPosition;
-        mainCamera.transform.position = transform.position + Configuration.cameraOffset; 
+        mainCamera.transform.position = transform.position + Configuration.cameraOffset;
         bugSize = transform.localScale;
+
+        rawImage = GameObject.Find("RawImage");
+
+        Debug.Log("israwloaded", rawImage);
 
 
         if (Configuration.cameraMode == 0)
@@ -53,8 +60,10 @@ public class HeroControl : MonoBehaviour
             mainCamera.transform.position = transform.position + Configuration.cameraOffset;
             mainCamera.transform.rotation = transform.rotation;
             mainCamera.transform.Rotate(0f, -90f, 0f);
-            lbBody.SetActive(false);
-            lbHead.SetActive(false);
+
+            rawImage.SetActive(true);
+            //lbBody.SetActive(false);
+            //lbHead.SetActive(false);
             //            render.enabled = false;
             //Debug.Log("before");
             //Debug.Log(bugCollider.size);
@@ -67,9 +76,12 @@ public class HeroControl : MonoBehaviour
         {
             mainCamera.transform.position = new Vector3(0f, 50f, Configuration.xOffset);
             mainCamera.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            lbBody.SetActive(true);
-            lbHead.SetActive(true);
-//            render.enabled = true;
+
+            rawImage.SetActive(false);
+
+            //lbBody.SetActive(true);
+            //lbHead.SetActive(true);
+            //            render.enabled = true;
             //transform.localScale = bugSize;
             //bugCollider.size = new Vector3(2f, 3f, 2f);
         }
@@ -99,7 +111,7 @@ public class HeroControl : MonoBehaviour
         cherry.GetComponent<CherryControl>().dx = LoadSituations.datas[sceneCounter].cherryDx * Configuration.cherry_speed;
         cherry.GetComponent<CherryControl>().dy = LoadSituations.datas[sceneCounter].cherryDy * Configuration.cherry_speed;
         wasp.GetComponent<WaspControl>().dx = LoadSituations.datas[sceneCounter].waspDx * Configuration.wasp_speed;
-        wasp.GetComponent<WaspControl>().dy = LoadSituations.datas[sceneCounter].waspDy * Configuration.wasp_speed; 
+        wasp.GetComponent<WaspControl>().dy = LoadSituations.datas[sceneCounter].waspDy * Configuration.wasp_speed;
 
         string res = "road" + (LoadSituations.datas[sceneCounter].scene);
 
@@ -117,7 +129,7 @@ public class HeroControl : MonoBehaviour
         GameObject.Find("Trees").SetActive(LoadSituations.showTrees);
         GameObject.Find("Hills").SetActive(LoadSituations.showHills);
 
-  //      StartCoroutine(Countdown());
+        //      StartCoroutine(Countdown());
         InvokeRepeating("InvokeTimer", 0, 0.02f);
 
     }
@@ -139,7 +151,7 @@ public class HeroControl : MonoBehaviour
         if (Input.GetKey("escape"))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
-//            Application.Quit();
+            //            Application.Quit();
         }
         else if (Input.GetKeyDown("f1"))
         {
@@ -154,21 +166,23 @@ public class HeroControl : MonoBehaviour
                 mainCamera.transform.position = transform.position + Configuration.cameraOffset;
                 mainCamera.transform.rotation = transform.rotation;
                 mainCamera.transform.Rotate(0f, -90f, 0f);
-                lbBody.SetActive(false);
-                lbHead.SetActive(false);
-//                render.enabled = false;
+                //lbBody.SetActive(false);
+                //lbHead.SetActive(false);
+                rawImage.SetActive(true);
+                //                render.enabled = false;
 
-//                transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
-//                bugCollider.size = new Vector3(1000f, 1500f, 1000f);
-//                bugCollider.size.Scale(new Vector3(1000f, 1000f, 1000f));
+                //                transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+                //                bugCollider.size = new Vector3(1000f, 1500f, 1000f);
+                //                bugCollider.size.Scale(new Vector3(1000f, 1000f, 1000f));
             }
             else
             {
                 mainCamera.transform.position = new Vector3(0f, 50f, Configuration.xOffset);
                 mainCamera.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
- //               render.enabled = true;
-                lbBody.SetActive(true);
-                lbHead.SetActive(true);
+                //               render.enabled = true;
+                rawImage.SetActive(false);
+                //lbBody.SetActive(true);
+                //lbHead.SetActive(true);
                 //                transform.localScale = bugSize;
                 //                bugCollider.size = new Vector3(2f, 3f, 2f);
             }
@@ -179,19 +193,33 @@ public class HeroControl : MonoBehaviour
 
         if (isRun)
         {
+            //            textInfo.text = "scene:" + LoadSituations.datas[sceneCounter].scene + " attempt:" + attemptCounter + " x:" + (int)((transform.position.x + 22.5f) * 10) + " y:" + (int)((transform.position.z) * 10);
+            textInfo.text = "Сцена: " + (sceneCounter + 1) + " из " + LoadSituations.datas.Count + "\n\nПопытка: " + attemptCounter;
+        }
+    }
+
+
+    void FixedUpdate()
+    {
+        if (Time.timeSinceLevelLoad > Configuration.start_pause)
+        {
+
+            LoadSituations.WriteLog(GetX(transform.position.x), GetY(transform.position.z),
+                GetX(wasp.transform.position.x), GetY(wasp.transform.position.z),
+                LoadSituations.datas[sceneCounter].waspDx, LoadSituations.datas[sceneCounter].waspDy,
+                LoadSituations.datas[sceneCounter].waspVx, LoadSituations.datas[sceneCounter].waspVy,
+                GetX(cherry.transform.position.x), GetY(cherry.transform.position.z),
+                LoadSituations.datas[sceneCounter].cherryDx, LoadSituations.datas[sceneCounter].cherryDy,
+                0, sceneCounter * 10, sceneCounter + 1, LoadSituations.datas[sceneCounter].scene,
+                -10000, -10000
+                );
+        }
+
+        if (isRun)
+        {
             //transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * 0.01f);
-            if (Time.timeSinceLevelLoad > Configuration.start_pause) {
-
-                //LoadSituations.WriteLog(GetX(transform.position.x), GetY(transform.position.z), 
-                //    GetX(wasp.transform.position.x), GetY(wasp.transform.position.z),
-                //    LoadSituations.datas[sceneCounter].waspDx, LoadSituations.datas[sceneCounter].waspDy,
-                //    LoadSituations.datas[sceneCounter].waspVx, LoadSituations.datas[sceneCounter].waspVy,
-                //    GetX(cherry.transform.position.x), GetY(cherry.transform.position.z),
-                //    LoadSituations.datas[sceneCounter].cherryDx, LoadSituations.datas[sceneCounter].cherryDy,
-                //    0, sceneCounter * 10, sceneCounter + 1, LoadSituations.datas[sceneCounter].scene,
-                //    -10000, -10000
-                //    );
-
+            if (Time.timeSinceLevelLoad > Configuration.start_pause)
+            {
                 float xLimit = Configuration.xOffset - 2;
 
                 transform.Translate(Vector3.left * Time.deltaTime * 5.0f * Configuration.bug_speed);
@@ -236,53 +264,33 @@ public class HeroControl : MonoBehaviour
                     mainCamera.transform.Rotate(0.0f, Input.GetAxis("Horizontal") * speed, 0.0f);
                 }
             }
-//            textInfo.text = "scene:" + LoadSituations.datas[sceneCounter].scene + " attempt:" + attemptCounter + " x:" + (int)((transform.position.x + 22.5f) * 10) + " y:" + (int)((transform.position.z) * 10);
-            textInfo.text = "сцена " + (sceneCounter + 1) + " из " + LoadSituations.datas.Count + "  попытка:" + attemptCounter;
         }
     }
 
 
-    //void FixedUpdate()
-    //{
-    //    if (Time.timeSinceLevelLoad > Configuration.start_pause)
-    //    {
-
-    //        LoadSituations.WriteLog(GetX(transform.position.x), GetY(transform.position.z),
-    //            GetX(wasp.transform.position.x), GetY(wasp.transform.position.z),
-    //            LoadSituations.datas[sceneCounter].waspDx, LoadSituations.datas[sceneCounter].waspDy,
-    //            LoadSituations.datas[sceneCounter].waspVx, LoadSituations.datas[sceneCounter].waspVy,
-    //            GetX(cherry.transform.position.x), GetY(cherry.transform.position.z),
-    //            LoadSituations.datas[sceneCounter].cherryDx, LoadSituations.datas[sceneCounter].cherryDy,
-    //            0, sceneCounter * 10, sceneCounter + 1, LoadSituations.datas[sceneCounter].scene,
-    //            -10000, -10000
-    //            );
-    //    }
-    //}
-
-
- //   private IEnumerator Countdown()
+    //   private IEnumerator Countdown()
     private void InvokeTimer()
     {
- //       long time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
- //       while (true)
-  //      {
-            if (Time.timeSinceLevelLoad > Configuration.start_pause && isRun)
-            {
+        //       long time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        //       while (true)
+        //      {
+        if (Time.timeSinceLevelLoad > Configuration.start_pause && isRun)
+        {
 
-                LoadSituations.WriteLog(GetX(transform.position.x), GetY(transform.position.z),
-                    GetX(wasp.transform.position.x), GetY(wasp.transform.position.z),
-                    LoadSituations.datas[sceneCounter].waspDx, LoadSituations.datas[sceneCounter].waspDy,
-                    LoadSituations.datas[sceneCounter].waspVx, LoadSituations.datas[sceneCounter].waspVy,
-                    GetX(cherry.transform.position.x), GetY(cherry.transform.position.z),
-                    LoadSituations.datas[sceneCounter].cherryDx, LoadSituations.datas[sceneCounter].cherryDy,
-                    0, score, LoadSituations.datas[sceneCounter].scene, attemptCounter,
-                    -10000, -10000
-                    );
-            }
- //           long timeDiff = 20 - (DateTimeOffset.Now.ToUnixTimeMilliseconds() - time);
- //           yield return new WaitForSecondsRealtime(timeDiff / 1000.0f); //wait 2 seconds
- //           time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-  //      }
+            LoadSituations.WriteLog(GetX(transform.position.x), GetY(transform.position.z),
+                GetX(wasp.transform.position.x), GetY(wasp.transform.position.z),
+                LoadSituations.datas[sceneCounter].waspDx, LoadSituations.datas[sceneCounter].waspDy,
+                LoadSituations.datas[sceneCounter].waspVx, LoadSituations.datas[sceneCounter].waspVy,
+                GetX(cherry.transform.position.x), GetY(cherry.transform.position.z),
+                LoadSituations.datas[sceneCounter].cherryDx, LoadSituations.datas[sceneCounter].cherryDy,
+                0, score, LoadSituations.datas[sceneCounter].scene, attemptCounter,
+                -10000, -10000
+                );
+        }
+        //           long timeDiff = 20 - (DateTimeOffset.Now.ToUnixTimeMilliseconds() - time);
+        //           yield return new WaitForSecondsRealtime(timeDiff / 1000.0f); //wait 2 seconds
+        //           time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        //      }
     }
 
     void OnTriggerEnter(Collider collider)
@@ -319,8 +327,8 @@ public class HeroControl : MonoBehaviour
             //set velocity 0
             //adjust the object position (the object may overlap with the block)
         }
-//        Application.LoadLevel(Application.loadedLevel);
- //       SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //        Application.LoadLevel(Application.loadedLevel);
+        //       SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         //        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 
@@ -340,7 +348,8 @@ public class HeroControl : MonoBehaviour
         {
             sceneCounter--;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
-        } else
+        }
+        else
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
