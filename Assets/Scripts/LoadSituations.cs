@@ -119,7 +119,7 @@ public class LoadSituations
         var path = Directory.GetCurrentDirectory();
         Debug.Log(path);
 
-        StreamReader reader = new StreamReader(path + "\\situations.txt", true);
+        StreamReader reader = new StreamReader(path + "/situations.txt", true);
         while (!reader.EndOfStream)
         {
             var line = reader.ReadLine();
