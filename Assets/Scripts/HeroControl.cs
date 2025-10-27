@@ -7,7 +7,10 @@ using UnityEngine.SceneManagement;
 
 public class HeroControl : MonoBehaviour
 {
-    private float speed = 0.8f;
+    [Header("Player Config")]
+    [Range(0f, 10f)]
+    public float RotationSpeed = 1.2f;
+
     private bool isRun = true;
     TextMeshProUGUI textInfo;
     LoadSituations loadSituations = new LoadSituations();
@@ -18,6 +21,7 @@ public class HeroControl : MonoBehaviour
     GameObject wasp;
     GameObject cherry;
     GameObject mainCamera;
+    GameObject topCamera;
     GameObject lbBody;
     GameObject lbHead;
 
@@ -50,42 +54,11 @@ public class HeroControl : MonoBehaviour
         mainCamera.transform.position = transform.position + Configuration.cameraOffset;
         bugSize = transform.localScale;
 
+        topCamera = GameObject.Find("TopCameraPlayer");
+        topCamera.SetActive(false);
         rawImage = GameObject.Find("RawImage");
 
-        Debug.Log("israwloaded", rawImage);
-
-
-        if (Configuration.cameraMode == 0)
-        {
-            mainCamera.transform.position = transform.position + Configuration.cameraOffset;
-            mainCamera.transform.rotation = transform.rotation;
-            mainCamera.transform.Rotate(0f, -90f, 0f);
-
-            rawImage.SetActive(true);
-            //lbBody.SetActive(false);
-            //lbHead.SetActive(false);
-            //            render.enabled = false;
-            //Debug.Log("before");
-            //Debug.Log(bugCollider.size);
-            //transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
-            //bugCollider.size.Scale(new Vector3(1000f, 1000f, 1000f));
-            //Debug.Log("after");
-            //Debug.Log(bugCollider.size);
-        }
-        else
-        {
-            mainCamera.transform.position = new Vector3(0f, 50f, Configuration.xOffset);
-            mainCamera.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-
-            rawImage.SetActive(false);
-
-            //lbBody.SetActive(true);
-            //lbHead.SetActive(true);
-            //            render.enabled = true;
-            //transform.localScale = bugSize;
-            //bugCollider.size = new Vector3(2f, 3f, 2f);
-        }
-
+        UpdateCameras();
 
         Debug.Log("wasp scale: " + wasp.transform.localScale);
 
@@ -93,16 +66,10 @@ public class HeroControl : MonoBehaviour
         wasp.transform.localScale = wasp.transform.localScale * Configuration.wasp_size;
         Debug.Log("wasp scale after: " + wasp.transform.localScale);
 
-        //cameraPosition = mainCamera.transform.position;
-        //cameraRotation = mainCamera.transform.rotation;
-
         Debug.Log("camera position: " + mainCamera.transform.position);
         Debug.Log("camera rotation: " + mainCamera.transform.rotation);
 
-        speed *= Configuration.bug_rotate_speed;
-
-        //cherry.transform.localScale = new Vector3(8.48f, 8.48f, 8.48f);
-        //wasp.transform.localScale = new Vector3(3.22f, 3.22f, 3.22f);
+        RotationSpeed *= Configuration.bug_rotate_speed;
 
         // поле 350 на 450
         wasp.transform.position = new Vector3(LoadSituations.datas[sceneCounter].waspX / 10.0f - Configuration.xOffset + 2.5f, wasp.transform.position.y, 50 - LoadSituations.datas[sceneCounter].waspY / 10.0f - 1.8f);
@@ -128,12 +95,23 @@ public class HeroControl : MonoBehaviour
 
         GameObject.Find("Trees").SetActive(LoadSituations.showTrees);
         GameObject.Find("Hills").SetActive(LoadSituations.showHills);
-
-        //      StartCoroutine(Countdown());
-        InvokeRepeating("InvokeTimer", 0, 0.02f);
-
     }
 
+    private void UpdateCameras()
+    {
+        if (Configuration.cameraMode == 0)
+        {
+            topCamera.SetActive(false);
+            mainCamera.SetActive(true);
+            rawImage.SetActive(true);
+        }
+        else
+        {
+            mainCamera.SetActive(false);
+            topCamera.SetActive(true);
+            rawImage.SetActive(false);
+        }
+    }
 
     private float GetX(float x)
     {
@@ -151,7 +129,7 @@ public class HeroControl : MonoBehaviour
         if (Input.GetKey("escape"))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
-            //            Application.Quit();
+            LoadSituations.CloseLog();
         }
         else if (Input.GetKeyDown("f1"))
         {
@@ -161,136 +139,64 @@ public class HeroControl : MonoBehaviour
                 Configuration.cameraMode = 0;
             }
 
-            if (Configuration.cameraMode == 0)
-            {
-                mainCamera.transform.position = transform.position + Configuration.cameraOffset;
-                mainCamera.transform.rotation = transform.rotation;
-                mainCamera.transform.Rotate(0f, -90f, 0f);
-                //lbBody.SetActive(false);
-                //lbHead.SetActive(false);
-                rawImage.SetActive(true);
-                //                render.enabled = false;
-
-                //                transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
-                //                bugCollider.size = new Vector3(1000f, 1500f, 1000f);
-                //                bugCollider.size.Scale(new Vector3(1000f, 1000f, 1000f));
-            }
-            else
-            {
-                mainCamera.transform.position = new Vector3(0f, 50f, Configuration.xOffset);
-                mainCamera.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-                //               render.enabled = true;
-                rawImage.SetActive(false);
-                //lbBody.SetActive(true);
-                //lbHead.SetActive(true);
-                //                transform.localScale = bugSize;
-                //                bugCollider.size = new Vector3(2f, 3f, 2f);
-            }
+            UpdateCameras();
         }
-
-
-
 
         if (isRun)
         {
-            //            textInfo.text = "scene:" + LoadSituations.datas[sceneCounter].scene + " attempt:" + attemptCounter + " x:" + (int)((transform.position.x + 22.5f) * 10) + " y:" + (int)((transform.position.z) * 10);
             textInfo.text = "Сцена: " + (sceneCounter + 1) + " из " + LoadSituations.datas.Count + "\n\nПопытка: " + attemptCounter;
+
+            if (Time.timeSinceLevelLoad > Configuration.start_pause)
+            {
+                float xLimit = Configuration.xOffset - 2;
+                float moveSpeed = 5.0f * Configuration.bug_speed;
+
+                // Плавное движение с deltaTime
+                transform.Translate(Vector3.left * Time.deltaTime * moveSpeed);
+
+                // Ограничения
+                transform.position = new Vector3(
+                    Mathf.Clamp(transform.position.x, -xLimit, xLimit),
+                    transform.position.y,
+                    Mathf.Clamp(transform.position.z, 0f, 50f)
+                );
+
+                // Плавный поворот
+                transform.Rotate(0.0f, Input.GetAxis("Horizontal") * RotationSpeed * Time.deltaTime * 60, 0.0f);
+            }
         }
     }
 
-
+    private float logTimer = 0f;
+    [field: SerializeField]
+    [Header("Movement Logging")]
+    private float logFrequency = 10f; // записей в секунду
     void FixedUpdate()
     {
         if (Time.timeSinceLevelLoad > Configuration.start_pause)
         {
+            logTimer += Time.fixedDeltaTime;
 
-            LoadSituations.WriteLog(GetX(transform.position.x), GetY(transform.position.z),
-                GetX(wasp.transform.position.x), GetY(wasp.transform.position.z),
-                LoadSituations.datas[sceneCounter].waspDx, LoadSituations.datas[sceneCounter].waspDy,
-                LoadSituations.datas[sceneCounter].waspVx, LoadSituations.datas[sceneCounter].waspVy,
-                GetX(cherry.transform.position.x), GetY(cherry.transform.position.z),
-                LoadSituations.datas[sceneCounter].cherryDx, LoadSituations.datas[sceneCounter].cherryDy,
-                0, sceneCounter * 10, sceneCounter + 1, LoadSituations.datas[sceneCounter].scene,
-                -10000, -10000
-                );
-        }
-
-        if (isRun)
-        {
-            //transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * 0.01f);
-            if (Time.timeSinceLevelLoad > Configuration.start_pause)
+            float logInterval = 1f / logFrequency;
+            if (logTimer >= logInterval)
             {
-                float xLimit = Configuration.xOffset - 2;
-
-                transform.Translate(Vector3.left * Time.deltaTime * 5.0f * Configuration.bug_speed);
-                if (transform.position.x > xLimit)
-                {
-                    transform.position = new Vector3(xLimit, transform.position.y, transform.position.z);
-                }
-                if (transform.position.x < -xLimit)
-                {
-                    transform.position = new Vector3(-xLimit, transform.position.y, transform.position.z);
-                }
-                if (transform.position.z > 50f)
-                {
-                    transform.position = new Vector3(transform.position.x, transform.position.y, 50f);
-                }
-                if (transform.position.z < 0f)
-                {
-                    transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
-                }
-                transform.Rotate(0.0f, Input.GetAxis("Horizontal") * speed, 0.0f);
-
-
-                if (Configuration.cameraMode == 0)
-                {
-                    mainCamera.transform.Translate(Vector3.forward * Time.deltaTime * 5.0f * Configuration.bug_speed);
-                    if (mainCamera.transform.position.x > xLimit)
-                    {
-                        mainCamera.transform.position = new Vector3(xLimit, mainCamera.transform.position.y, transform.position.z);
-                    }
-                    if (mainCamera.transform.position.x < -xLimit)
-                    {
-                        mainCamera.transform.position = new Vector3(-xLimit, mainCamera.transform.position.y, transform.position.z);
-                    }
-                    if (mainCamera.transform.position.z > 50f)
-                    {
-                        mainCamera.transform.position = new Vector3(transform.position.x, mainCamera.transform.position.y, 50f);
-                    }
-                    if (mainCamera.transform.position.z < 0f)
-                    {
-                        mainCamera.transform.position = new Vector3(transform.position.x, mainCamera.transform.position.y, 0f);
-                    }
-                    mainCamera.transform.Rotate(0.0f, Input.GetAxis("Horizontal") * speed, 0.0f);
-                }
+                logTimer = 0f;
+                WriteMovementLog();
             }
         }
     }
 
-
-    //   private IEnumerator Countdown()
-    private void InvokeTimer()
+    private void WriteMovementLog()
     {
-        //       long time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        //       while (true)
-        //      {
-        if (Time.timeSinceLevelLoad > Configuration.start_pause && isRun)
-        {
-
-            LoadSituations.WriteLog(GetX(transform.position.x), GetY(transform.position.z),
-                GetX(wasp.transform.position.x), GetY(wasp.transform.position.z),
-                LoadSituations.datas[sceneCounter].waspDx, LoadSituations.datas[sceneCounter].waspDy,
-                LoadSituations.datas[sceneCounter].waspVx, LoadSituations.datas[sceneCounter].waspVy,
-                GetX(cherry.transform.position.x), GetY(cherry.transform.position.z),
-                LoadSituations.datas[sceneCounter].cherryDx, LoadSituations.datas[sceneCounter].cherryDy,
-                0, score, LoadSituations.datas[sceneCounter].scene, attemptCounter,
-                -10000, -10000
-                );
-        }
-        //           long timeDiff = 20 - (DateTimeOffset.Now.ToUnixTimeMilliseconds() - time);
-        //           yield return new WaitForSecondsRealtime(timeDiff / 1000.0f); //wait 2 seconds
-        //           time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        //      }
+        LoadSituations.WriteLog(GetX(transform.position.x), GetY(transform.position.z),
+            GetX(wasp.transform.position.x), GetY(wasp.transform.position.z),
+            LoadSituations.datas[sceneCounter].waspDx, LoadSituations.datas[sceneCounter].waspDy,
+            LoadSituations.datas[sceneCounter].waspVx, LoadSituations.datas[sceneCounter].waspVy,
+            GetX(cherry.transform.position.x), GetY(cherry.transform.position.z),
+            LoadSituations.datas[sceneCounter].cherryDx, LoadSituations.datas[sceneCounter].cherryDy,
+            0, sceneCounter * 10, sceneCounter + 1, LoadSituations.datas[sceneCounter].scene,
+            -10000, -10000
+            );
     }
 
     void OnTriggerEnter(Collider collider)
@@ -315,21 +221,12 @@ public class HeroControl : MonoBehaviour
 
             attemptCounter++;
             sceneCounter++;
-            //if (sceneCounter >= LoadSituations.datas.Count)
-            //{
-            //    sceneCounter--;
-            //    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
-            //    return;
-            //}
         }
         if (collider.tag == "")
         {
             //set velocity 0
             //adjust the object position (the object may overlap with the block)
         }
-        //        Application.LoadLevel(Application.loadedLevel);
-        //       SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        //        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 
     private IEnumerator coroutine;

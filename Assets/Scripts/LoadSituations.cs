@@ -9,9 +9,10 @@ using UnityEngine;
 
 public class LoadSituations
 {
-    public struct Data {
-        public Data(int scene, bool waspVisible, 
-            int waspX, int waspY, float waspDx, float waspDy, float waspVx, float waspVy, 
+    public struct Data
+    {
+        public Data(int scene, bool waspVisible,
+            int waspX, int waspY, float waspDx, float waspDy, float waspVx, float waspVy,
             int cherryX, int cherryY, float cherryDx, float cherryDy, float cherryVx, float cherryVy)
         {
             this.scene = scene;
@@ -58,14 +59,27 @@ public class LoadSituations
 
     private static bool InitLog()
     {
-        var path = Directory.GetCurrentDirectory();
-        DateTime dt = DateTime.Now;
+        try
+        {
+            var currentPath = Directory.GetCurrentDirectory();
+            var logFilePath = $"{currentPath}/MovementLogs/path_game_log_{DateTime.Now:yyyyMMdd - HHmmss}.txt";
+            string logDirectoryPath = $"{currentPath}/MovementLogs";
 
-        writer = new StreamWriter(path + "/path_game_log_" + dt.ToString("yyyyMMdd-HHmmss") + ".txt");
-        writer.WriteLine("time\tbug_X\tbug_Y\twasp->wx\twasp->wy\twasp->d_x\twasp->d_y\twasp->d_vx\twasp->d_vy\tcherry->cx\tcherry->cy\tcherry->d_cx\tcherry->d_cy\tlevel\tscore\tscene_number\tattempt\teyetr_X\teyetr_Y");
-        writer.Flush();
+            if (!string.IsNullOrEmpty(logDirectoryPath) && !Directory.Exists(logDirectoryPath))
+            {
+                Directory.CreateDirectory(logDirectoryPath);
+            }
 
-        return true;
+            writer = new StreamWriter(logFilePath, true);
+            writer.WriteLine("time\tbug_X\tbug_Y\twasp->wx\twasp->wy\twasp->d_x\twasp->d_y\twasp->d_vx\twasp->d_vy\tcherry->cx\tcherry->cy\tcherry->d_cx\tcherry->d_cy\tlevel\tscore\tscene_number\tattempt\teyetr_X\teyetr_Y");
+            writer.Flush();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Ошибка записи лога: {ex.Message}");
+        }
+        return false;
     }
 
 
@@ -79,13 +93,13 @@ public class LoadSituations
     private static CultureInfo ci = new CultureInfo("en-US");
     private static string F4L(float num)
     {
-        
+
         return num.ToString("0.###", ci);
     }
 
-    public static void WriteLog(float bugX, float bugY, 
-        float waspX, float waspY, 
-        float waspDX, float waspDY, 
+    public static void WriteLog(float bugX, float bugY,
+        float waspX, float waspY,
+        float waspDX, float waspDY,
         float waspVX, float waspVY,
         float cherryX, float cherryY,
         float cherryDX, float cherryDY,
@@ -93,8 +107,8 @@ public class LoadSituations
         float eyeX, float eyeY
         )
     {
-        writer.WriteLineAsync((DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime) + "\t" 
-            + F4L(bugX) + "\t" + F4L(500 - bugY) + "\t" 
+        writer.WriteLineAsync((DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime) + "\t"
+            + F4L(bugX) + "\t" + F4L(500 - bugY) + "\t"
             + F4L(waspX) + "\t" + F4L(500 - waspY) + "\t"
             + F4L(waspDX) + "\t" + F4L(waspDY) + "\t"
             + F4L(waspVX) + "\t" + F4L(waspVY) + "\t"
@@ -146,13 +160,10 @@ public class LoadSituations
             var cherryVx = float.Parse(tokens[12].Replace('.', NumberFormatInfo.CurrentInfo.NumberDecimalSeparator[0]));
             var cherryVy = float.Parse(tokens[13].Replace('.', NumberFormatInfo.CurrentInfo.NumberDecimalSeparator[0]));
 
-            datas.Add(new Data(scene, waspVisible, 
-                waspX, waspY, waspDx, waspDy, waspVx, waspVy, 
+            datas.Add(new Data(scene, waspVisible,
+                waspX, waspY, waspDx, waspDy, waspVx, waspVy,
                 cherryX, cherryY, cherryDx, cherryDy, cherryVx, cherryVy));
 
         }
     }
-
-
-
 }
