@@ -9,7 +9,7 @@ public class HeroControl : MonoBehaviour
 {
     [Header("Player Config")]
     [Range(0f, 10f)]
-    public float RotationSpeed = 1.2f;
+    public float RotationSpeed = 0.9f;
 
     private bool isRun = true;
     TextMeshProUGUI textInfo;
@@ -22,9 +22,6 @@ public class HeroControl : MonoBehaviour
     GameObject cherry;
     GameObject mainCamera;
     GameObject topCamera;
-    GameObject lbBody;
-    GameObject lbHead;
-
     GameObject rawImage;
 
     //    Vector3 cameraPosition;
@@ -38,18 +35,14 @@ public class HeroControl : MonoBehaviour
     void Start()
     {
         textInfo = GameObject.Find("TextInfo").GetComponent<TextMeshProUGUI>();
-        //       tracePlane = GameObject.Find("TracePlane").GetComponent<Plane>();
-
         loadSituations.Load();
         config.Load();
 
-        //       render = GetComponent<Renderer>();
         bugCollider = GetComponent<BoxCollider>();
         wasp = GameObject.Find("FantasyBee");
         cherry = GameObject.Find("Cherry");
         mainCamera = GameObject.Find("Main Camera");
-        lbBody = GameObject.Find("lb_body");
-        lbHead = GameObject.Find("lb_head");
+
         transform.position = Configuration.bugInitPosition;
         mainCamera.transform.position = transform.position + Configuration.cameraOffset;
         bugSize = transform.localScale;
@@ -80,13 +73,13 @@ public class HeroControl : MonoBehaviour
         wasp.GetComponent<WaspControl>().dx = LoadSituations.datas[sceneCounter].waspDx * Configuration.wasp_speed;
         wasp.GetComponent<WaspControl>().dy = LoadSituations.datas[sceneCounter].waspDy * Configuration.wasp_speed;
 
-        string res = "road" + (LoadSituations.datas[sceneCounter].scene);
+        string res = "Roads/road" + (LoadSituations.datas[sceneCounter].scene);
 
         Texture txt = (Texture)Resources.Load(res);
 
         if (txt == null)
         {
-            txt = (Texture)Resources.Load("road0");
+            txt = (Texture)Resources.Load("Roads/road0");
         }
 
         GameObject.Find("TracePlane").GetComponent<Renderer>().material.mainTexture = txt;

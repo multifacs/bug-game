@@ -25,22 +25,12 @@ public class WaspControl : MonoBehaviour
             transform.Translate(Vector3.left * Time.deltaTime * -dx * 5, Space.World);
             transform.Translate(Vector3.forward * Time.deltaTime * -dy * 5, Space.World);
 
-            if (transform.position.x > xLimit)
-            {
-                transform.position = new Vector3(xLimit, transform.position.y, transform.position.z);
-            }
-            if (transform.position.x < -xLimit)
-            {
-                transform.position = new Vector3(-xLimit, transform.position.y, transform.position.z);
-            }
-            if (transform.position.z > 50f)
-            {
-                transform.position = new Vector3(transform.position.x, transform.position.y, 50f);
-            }
-            if (transform.position.z < 0f)
-            {
-                transform.position = new Vector3(transform.position.x, transform.position.y, 0f);
-            }
+            // Ограничения
+            transform.position = new Vector3(
+                Mathf.Clamp(transform.position.x, -xLimit, xLimit),
+                transform.position.y,
+                Mathf.Clamp(transform.position.z, 0f, 50f)
+            );
 
         }
     }
