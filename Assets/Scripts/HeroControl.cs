@@ -22,7 +22,7 @@ public class HeroControl : MonoBehaviour
     GameObject cherry;
     GameObject mainCamera;
     GameObject topCamera;
-    GameObject rawImage;
+    //GameObject rawImage;
 
     //    Vector3 cameraPosition;
     //    Quaternion cameraRotation;
@@ -49,7 +49,7 @@ public class HeroControl : MonoBehaviour
 
         topCamera = GameObject.Find("TopCameraPlayer");
         topCamera.SetActive(false);
-        rawImage = GameObject.Find("RawImage");
+        //rawImage = GameObject.Find("RawImage");
 
         UpdateCameras();
 
@@ -96,13 +96,13 @@ public class HeroControl : MonoBehaviour
         {
             topCamera.SetActive(false);
             mainCamera.SetActive(true);
-            rawImage.SetActive(true);
+            //rawImage.SetActive(true);
         }
         else
         {
             mainCamera.SetActive(false);
             topCamera.SetActive(true);
-            rawImage.SetActive(false);
+            //rawImage.SetActive(false);
         }
     }
 
