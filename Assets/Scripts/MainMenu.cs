@@ -25,7 +25,7 @@ public class MainMenu : MonoBehaviour
 
     public void QuitGame()
     {
-        LoadSituations.CloseLog();
+        //LoadSituations.CloseLog();
         Application.Quit();
 #if UNITY_EDITOR
         if (EditorApplication.isPlaying)

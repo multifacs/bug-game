@@ -49,15 +49,14 @@ public class LoadSituations
 
     public static List<Data> datas = new List<Data>();
     private static bool isLoaded = false;
-    private static bool initLog = InitLog();
+    //private static bool initLog = InitLog();
     private static StreamWriter writer;
 
     public static bool showTrees = true;
     public static bool showHills = true;
     private static long startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-
-    private static bool InitLog()
+    public static bool InitLog()
     {
         try
         {
@@ -85,9 +84,16 @@ public class LoadSituations
 
     public static void CloseLog()
     {
-        writer.Flush();
-        writer.Close();
-        Debug.Log("Log stream closed");
+        try
+        {
+            writer.Flush();
+            writer.Close();
+            Debug.Log("Log stream closed");
+        } catch (Exception e)
+        {
+            //Debug.Log("Stream already closed!");
+            Debug.Log(e.ToString());
+        }
     }
 
     private static CultureInfo ci = new CultureInfo("en-US");

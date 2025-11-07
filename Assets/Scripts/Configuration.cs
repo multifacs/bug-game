@@ -13,7 +13,9 @@ public class Configuration
     public static float wasp_speed = 1f;
     public static float bug_speed = 1f;
     public static float bug_rotate_speed = 1f;
+
     public static float start_pause = 5f;
+    public static float log_frequency = 10f;
 
     public static int speed_mult = 1;
 
@@ -58,6 +60,7 @@ public class Configuration
             bug_rotate_speed = LoadFloat(configuration, "Objects:bug_rotate_speed");
 
             start_pause = LoadFloat(configuration, "Time:start_pause");
+            log_frequency = LoadFloat(configuration, "Time:log_frequency");
 
             circle_size = LoadFloat(configuration, "EEG:circle_size");
             circle_x = LoadFloat(configuration, "EEG:circle_x");

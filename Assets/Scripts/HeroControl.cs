@@ -88,6 +88,8 @@ public class HeroControl : MonoBehaviour
 
         GameObject.Find("Trees").SetActive(LoadSituations.showTrees);
         GameObject.Find("Hills").SetActive(LoadSituations.showHills);
+
+        LoadSituations.InitLog();
     }
 
     private void UpdateCameras()
@@ -163,7 +165,7 @@ public class HeroControl : MonoBehaviour
     private float logTimer = 0f;
     [field: SerializeField]
     [Header("Movement Logging")]
-    private float logFrequency = 10f; // записей в секунду
+    private float logFrequency = Configuration.log_frequency; // по-умолч. 10 записей в секунду
     void FixedUpdate()
     {
         if (Time.timeSinceLevelLoad > Configuration.start_pause)
