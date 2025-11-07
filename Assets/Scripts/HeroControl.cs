@@ -13,8 +13,8 @@ public class HeroControl : MonoBehaviour
 
     private bool isRun = true;
     TextMeshProUGUI textInfo;
-    LoadSituations loadSituations = new LoadSituations();
-    Configuration config = new Configuration();
+    //LoadSituations loadSituations = new();
+    //Configuration config = new();
     //    Plane tracePlane;
     public static int sceneCounter = 0;
     public static int attemptCounter = 1;
@@ -35,8 +35,8 @@ public class HeroControl : MonoBehaviour
     void Start()
     {
         textInfo = GameObject.Find("TextInfo").GetComponent<TextMeshProUGUI>();
-        loadSituations.Load();
-        config.Load();
+        LoadSituations.Load();
+        Configuration.Load();
 
         bugCollider = GetComponent<BoxCollider>();
         wasp = GameObject.Find("FantasyBee");
@@ -68,10 +68,10 @@ public class HeroControl : MonoBehaviour
         wasp.transform.position = new Vector3(LoadSituations.datas[sceneCounter].waspX / 10.0f - Configuration.xOffset + 2.5f, wasp.transform.position.y, 50 - LoadSituations.datas[sceneCounter].waspY / 10.0f - 1.8f);
         cherry.transform.position = new Vector3(LoadSituations.datas[sceneCounter].cherryX / 10.0f - Configuration.xOffset + 2.5f, cherry.transform.position.y, 50 - LoadSituations.datas[sceneCounter].cherryY / 10.0f - 2.5f);
 
-        cherry.GetComponent<CherryControl>().dx = LoadSituations.datas[sceneCounter].cherryDx * Configuration.cherry_speed;
-        cherry.GetComponent<CherryControl>().dy = LoadSituations.datas[sceneCounter].cherryDy * Configuration.cherry_speed;
-        wasp.GetComponent<WaspControl>().dx = LoadSituations.datas[sceneCounter].waspDx * Configuration.wasp_speed;
-        wasp.GetComponent<WaspControl>().dy = LoadSituations.datas[sceneCounter].waspDy * Configuration.wasp_speed;
+        cherry.GetComponent<CherryControl>().dx = LoadSituations.datas[sceneCounter].cherryDx * Configuration.cherry_speed * Configuration.speed_mult;
+        cherry.GetComponent<CherryControl>().dy = LoadSituations.datas[sceneCounter].cherryDy * Configuration.cherry_speed * Configuration.speed_mult;
+        wasp.GetComponent<WaspControl>().dx = LoadSituations.datas[sceneCounter].waspDx * Configuration.wasp_speed * Configuration.speed_mult;
+        wasp.GetComponent<WaspControl>().dy = LoadSituations.datas[sceneCounter].waspDy * Configuration.wasp_speed * Configuration.speed_mult;
 
         string res = "Roads/road" + (LoadSituations.datas[sceneCounter].scene);
 
@@ -142,7 +142,7 @@ public class HeroControl : MonoBehaviour
             if (Time.timeSinceLevelLoad > Configuration.start_pause)
             {
                 float xLimit = Configuration.xOffset - 2;
-                float moveSpeed = 5.0f * Configuration.bug_speed;
+                float moveSpeed = 5.0f * Configuration.bug_speed * Configuration.speed_mult;
 
                 // Плавное движение с deltaTime
                 transform.Translate(Vector3.left * Time.deltaTime * moveSpeed);
@@ -155,7 +155,7 @@ public class HeroControl : MonoBehaviour
                 );
 
                 // Плавный поворот
-                transform.Rotate(0.0f, Input.GetAxis("Horizontal") * RotationSpeed * Time.deltaTime * 60, 0.0f);
+                transform.Rotate(0.0f, Input.GetAxis("Horizontal") * RotationSpeed * Time.deltaTime * 60 * Configuration.speed_mult, 0.0f);
             }
         }
     }

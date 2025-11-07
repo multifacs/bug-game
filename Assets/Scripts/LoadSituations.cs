@@ -121,7 +121,7 @@ public class LoadSituations
             );
     }
 
-    public void Load()
+    public static void Load()
     {
         if (isLoaded)
         {
