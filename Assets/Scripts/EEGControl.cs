@@ -1,30 +1,69 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class EEGControl : MonoBehaviour
 {
     private GameObject EEGCircle;
-    private RectTransform rectTransform;
-    private TextMeshProUGUI tmpElem;
+    private RectTransform _rectTransform;
+    private TextMeshProUGUI _tmpElem;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private Coroutine _currentBlink;
+
     void Start()
     {
         Configuration.Load();
 
         EEGCircle = GameObject.Find("EEGCircle");
-        rectTransform = EEGCircle.GetComponent<RectTransform>();
-        tmpElem = EEGCircle.GetComponent<TextMeshProUGUI>();
-        tmpElem.color = Color.black;
-        rectTransform.anchoredPosition = new Vector2(Configuration.circle_x, Configuration.circle_y);
+        _rectTransform = EEGCircle.GetComponent<RectTransform>();
+        _tmpElem = EEGCircle.GetComponent<TextMeshProUGUI>();
+        _tmpElem.color = Color.white;
+        _rectTransform.anchoredPosition = new Vector2(Configuration.circle_x, Configuration.circle_y);
     }
 
-    // Update is called once per frame
-    void Update()
+    // Single blink for movement start
+    public void BlinkOnce()
     {
-        if (Time.timeSinceLevelLoad > Configuration.circle_black_time)
+        if (_currentBlink != null)
+            StopCoroutine(_currentBlink);
+
+        _currentBlink = StartCoroutine(BlinkCoroutine(1));
+    }
+
+    // Double blink for collision
+    public void BlinkTwice()
+    {
+        if (_currentBlink != null)
+            StopCoroutine(_currentBlink);
+
+        _currentBlink = StartCoroutine(BlinkCoroutine(2));
+    }
+
+    private IEnumerator BlinkCoroutine(int blinkCount)
+    {
+        for (int i = 0; i < blinkCount; i++)
         {
-            tmpElem.color = Color.white;
+            // Turn black
+            _tmpElem.color = Color.black;
+            yield return new WaitForSeconds(Configuration.circle_black_time);
+
+            // Turn white
+            _tmpElem.color = Color.white;
+
+            // If more blinks coming, wait a bit between them
+            //yield return new WaitForSeconds(Configuration.circle_black_time);
+            if (i < blinkCount - 1)
+            {
+                yield return new WaitForSeconds(Configuration.circle_black_time);
+            }
         }
+
+        _currentBlink = null;
+    }
+
+    // Keep old method if you still need it elsewhere
+    public void Blink()
+    {
+        BlinkOnce();
     }
 }

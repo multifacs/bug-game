@@ -31,6 +31,10 @@ public class HeroControl : MonoBehaviour
     Renderer render;
     public static int score = 0;
 
+    private bool _hasStartedMoving = false;
+
+    EEGControl eegControl;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,6 +46,8 @@ public class HeroControl : MonoBehaviour
         wasp = GameObject.Find("FantasyBee");
         cherry = GameObject.Find("Cherry");
         mainCamera = GameObject.Find("Main Camera");
+
+        eegControl = GameObject.Find("EEGCircle").GetComponent<EEGControl>();
 
         transform.position = Configuration.bugInitPosition;
         mainCamera.transform.position = transform.position + Configuration.cameraOffset;
@@ -87,6 +93,8 @@ public class HeroControl : MonoBehaviour
         wasp.SetActive(LoadSituations.datas[sceneCounter].waspVisible);
 
         GameObject.Find("Trees").SetActive(LoadSituations.showTrees);
+        GameObject.Find("Hills").SetActive(LoadSituations.showHills);
+
         GameObject.Find("Hills").SetActive(LoadSituations.showHills);
 
         LoadSituations.InitLog();
@@ -143,6 +151,12 @@ public class HeroControl : MonoBehaviour
 
             if (Time.timeSinceLevelLoad > Configuration.start_pause)
             {
+                if (!_hasStartedMoving)
+                {
+                    _hasStartedMoving = true;
+                    eegControl.BlinkOnce();
+                }
+
                 float xLimit = Configuration.xOffset - 2;
                 float moveSpeed = 5.0f * Configuration.bug_speed * Configuration.speed_mult;
 
@@ -196,9 +210,11 @@ public class HeroControl : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-
         isRun = false;
         Debug.Log("Hero Trigger tag:" + collider.tag);
+
+        eegControl.BlinkTwice();
+
         if (collider.tag == "FantasyBee")
         {
             attemptCounter++;
@@ -234,8 +250,8 @@ public class HeroControl : MonoBehaviour
 
     IEnumerator WaitOnCollision(Boolean isCherry)
     {
-        // suspend execution for 5 seconds
-        yield return new WaitForSeconds(0.1f);
+        // suspend execution for circle_black_time * 4 (black -> white -> black -> white)
+        yield return new WaitForSeconds(Configuration.circle_black_time * 4);
         if (sceneCounter >= LoadSituations.datas.Count && isCherry)
         {
             sceneCounter--;
