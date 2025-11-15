@@ -14,6 +14,8 @@ public class SettingsMenu : MonoBehaviour
         hills.isOn = LoadSituations.showHills;
         var speed = GameObject.Find("SpeedMult").GetComponent<Toggle>();
         speed.isOn = Configuration.speed_mult != 1;
+        var fps = GameObject.Find("FPSCap").GetComponent<Toggle>();
+        fps.isOn = Configuration.fps_capped;
         Debug.Log("config speed " + Configuration.speed_mult);
     }
 
@@ -35,6 +37,15 @@ public class SettingsMenu : MonoBehaviour
     {
         var toggle = GameObject.Find("SpeedMult").GetComponent<Toggle>();
         Configuration.speed_mult = toggle.isOn ? 2 : 1;
+    }
+
+    public void FPSCap()
+    {
+        var toggle = GameObject.Find("FPSCap").GetComponent<Toggle>();
+        Configuration.fps_capped = toggle.isOn;
+
+        // -1 means no cap (unlimited), 60 caps at 60 FPS
+        Application.targetFrameRate = Configuration.fps_capped ? 60 : -1;
     }
 
     // Update is called once per frame

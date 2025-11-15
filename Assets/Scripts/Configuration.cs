@@ -29,6 +29,8 @@ public class Configuration
     public static Vector3 bugInitPosition = new Vector3(0f, 0.1f, 50f - 46.4f);
     public static Vector3 cameraOffset = new Vector3(0f, 2.5f, 0f);
 
+    public static bool fps_capped = true;
+
     private static float LoadFloat(IConfiguration configuration, string name)
     {
         return float.Parse(configuration[name], CultureInfo.InvariantCulture);

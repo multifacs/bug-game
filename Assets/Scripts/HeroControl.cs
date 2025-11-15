@@ -263,4 +263,9 @@ public class HeroControl : MonoBehaviour
         }
     }
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    static void OnBeforeSceneLoad()
+    {
+        Application.targetFrameRate = 60;
+    }
 }
